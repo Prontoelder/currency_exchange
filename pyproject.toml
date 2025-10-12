@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 79
+extend-exclude = [".venv", ".mypy_cache", ".ruff_cache", "__pycache__", ".idea"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "PD", "PL", "TID"]
+ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["currency_exchange"]
+combine-as-imports = true
