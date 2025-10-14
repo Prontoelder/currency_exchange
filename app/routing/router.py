@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 
 class Router:
@@ -17,6 +17,39 @@ class Router:
         method = method.upper()
         self.routes.setdefault(method, {})[path] = handler
 
+    def _find_handler_by_template(self, method_routes: dict, path: str):
+        """
+        Finds a handler by matching the path against registered templates
+        (e.g., /path/{param}).
+        """
+        path_parts = path.split("/")
+
+        for template, handler in method_routes.items():
+            if "{" not in template:
+                continue
+
+            template_parts = template.split("/")
+            if len(template_parts) != len(path_parts):
+                continue
+
+            params = {}
+            is_match = True
+            for template_part, path_part in zip(template_parts, path_parts):
+                if template_part.startswith("{") and template_part.endswith(
+                    "}"
+                ):
+                    param_name = template_part.strip("{}")
+                    params[param_name] = path_part
+                elif template_part != path_part:
+                    is_match = False
+                    break
+
+            if is_match:
+                return handler, params
+
+        return None, None
+
+
     def resolve(self, method: str, path: str):
         """Resolve the handler function for a given HTTP method and path."""
         method = method.upper()
@@ -24,30 +57,4 @@ class Router:
         if path in method_routes:
             return method_routes[path], None
 
-        if (
-            path.startswith("/currency/")
-            and "/currency/{code}" in method_routes
-        ):
-            parts = path.split("/")
-            code = (
-                parts[self.PATH_PARAM_INDEX]
-                if len(parts) > self.PATH_PARAM_INDEX
-                else ""
-            )
-            return method_routes["/currency/{code}"], {"code": code}
-
-        if (
-            path.startswith("/exchangeRate/")
-            and "/exchangeRate/{currency_code_pair}" in method_routes
-        ):
-            parts = path.split("/")
-            currency_code_pair = (
-                parts[self.PATH_PARAM_INDEX]
-                if len(parts) > self.PATH_PARAM_INDEX
-                else ""
-            )
-            return method_routes["/exchangeRate/{currency_code_pair}"], {
-                "currency_code_pair": currency_code_pair
-            }
-
-        return None, None
+        return self._find_handler_by_template(method_routes, path)

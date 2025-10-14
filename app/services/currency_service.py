@@ -1,4 +1,5 @@
 from app.database.currency_dao import CurrencyDAO
+from app.dtos.create_currency_dto import CreateCurrencyDTO
 from app.dtos.currency_dto import CurrencyDTO
 from app.exceptions import CurrencyNotFoundError
 from app.mappers.currency_mapper import CurrencyMapper
@@ -24,7 +25,7 @@ class CurrencyService:
             raise CurrencyNotFoundError(f"Currency {code} not found")
         return self.currency_mapper.entity_to_dto(currency_entity)
 
-    def post_currency(self, currency_dto: CurrencyDTO) -> CurrencyDTO:
+    def post_currency(self, currency_dto: CreateCurrencyDTO) -> CurrencyDTO:
         """Posts a new currency, maps the result to a DTO and returns it."""
         currency_entity = self.currency_mapper.dto_to_entity(currency_dto)
         inserted_currency = self.currency_dao.post_currency(currency_entity)

@@ -5,11 +5,10 @@ from typing import Any
 from app.dtos.create_exchange_rate_dto import CreateExchangeRateDTO
 from app.dtos.currency_dto import CurrencyDTO
 from app.dtos.exchange_rate_dto import ExchangeRateDTO
-from app.mappers.base_mapper import BaseMapper
 from app.read_models.exchange_rate_view import ExchangeRateView
 
 
-class ExchangeRateMapper(BaseMapper):
+class ExchangeRateMapper:
     @staticmethod
     def row_to_view(row: sqlite3.Row) -> ExchangeRateView:
         """Converts database row to ExchangeRateView read model."""
@@ -46,7 +45,7 @@ class ExchangeRateMapper(BaseMapper):
         return CreateExchangeRateDTO(
             base_currency_code=data.get("base_currency_code", ""),
             target_currency_code=data.get("target_currency_code", ""),
-            rate=data.get("rate", ""),
+            rate=data.get("rate", Decimal("0")),
         )
 
     @staticmethod
@@ -54,9 +53,8 @@ class ExchangeRateMapper(BaseMapper):
         dto: CreateExchangeRateDTO,
     ) -> tuple[str, str, str]:
         """Normalize DTO for DAO insert (rate as TEXT)."""
-        normalized_rate = str(Decimal(dto.rate))
         return (
             dto.base_currency_code,
             dto.target_currency_code,
-            normalized_rate,
+            str(dto.rate),
         )

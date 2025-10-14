@@ -80,3 +80,27 @@ class ExchangeRateDAO(BaseDAO):
         if not inserted_rate:
             raise RuntimeError("Failed to retrieve inserted exchange rate")
         return inserted_rate
+
+    def patch_exchange_rate(
+        self, base_code: str, target_code: str, rate_str: str
+    ) -> ExchangeRateView:
+        """Update an existing exchange rate."""
+        sql = """UPDATE ExchangeRates
+                        SET rate = ?
+                        WHERE id = (
+                            SELECT er.id
+                            FROM ExchangeRates er
+                            JOIN Currencies bc ON er.base_currency_id = bc.id
+                            JOIN Currencies tc ON er.target_currency_id = tc.id
+                            WHERE bc.code = ? AND tc.code = ?
+                        );
+"""
+        self._execute(sql, (rate_str, base_code, target_code))
+
+        updated_rate = self.get_exchange_rate(base_code, target_code)
+        if not updated_rate:
+            raise CurrencyNotFoundError(
+                "Failed to retrieve updated exchange rate, "
+                "the currency pair may not exist."
+            )
+        return updated_rate

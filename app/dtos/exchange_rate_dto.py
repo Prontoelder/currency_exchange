@@ -10,3 +10,4 @@ class ExchangeRateDTO:
     baseCurrency: CurrencyDTO
     targetCurrency: CurrencyDTO
     rate: Decimal
+

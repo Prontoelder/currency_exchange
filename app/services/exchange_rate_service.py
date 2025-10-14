@@ -1,6 +1,8 @@
+
 from app.database.exchange_rate_dao import ExchangeRateDAO
 from app.dtos.create_exchange_rate_dto import CreateExchangeRateDTO
 from app.dtos.exchange_rate_dto import ExchangeRateDTO
+from app.dtos.update_exchange_rate_dto import UpdateExchangeRateDTO
 from app.exceptions import CurrencyPairNotFoundError
 from app.mappers.exchange_rate_mapper import ExchangeRateMapper
 
@@ -44,10 +46,20 @@ class ExchangeRateService:
         base_code, target_code, rate_str = (
             self.exchange_rates_mapper.dto_to_insert_args(exchange_rate_dto)
         )
-
         view = self.exchange_rates_dao.post_exchange_rate(
-            base_code,
-            target_code,
-            rate_str,
+            base_code, target_code, rate_str
+        )
+        return self.exchange_rates_mapper.view_to_dto(view)
+
+    def patch_exchange_rate(
+        self, exchange_rate_dto: UpdateExchangeRateDTO
+    ) -> ExchangeRateDTO:
+        """Update an existing exchange rate."""
+        base_code = exchange_rate_dto.currency_code_pair[:3]
+        target_code = exchange_rate_dto.currency_code_pair[3:]
+        rate_str = str(exchange_rate_dto.rate)
+
+        view = self.exchange_rates_dao.patch_exchange_rate(
+            base_code, target_code, rate_str
         )
         return self.exchange_rates_mapper.view_to_dto(view)

@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from app.dtos.exchange_rate_dto import ExchangeRateDTO
+from app.dtos.update_exchange_rate_dto import UpdateExchangeRateDTO
 from app.mappers.exchange_rate_mapper import ExchangeRateMapper
 from app.services.exchange_rate_service import ExchangeRateService
 from app.validations.exchange_rate_validator import ExchangeRateValidator
@@ -58,3 +59,29 @@ class ExchangeRatesController:
             exchange_rate_dto
         )
         return exchange_rate, HTTPStatus.CREATED
+
+    def handle_patch_exchange_rate(
+        self,
+        currency_code_pair: str = "",
+        rate: str = "",
+        **_kwargs: dict,
+    ) -> tuple[ExchangeRateDTO, HTTPStatus]:
+        """Create new exchange rate entry."""
+        validated_code_pair = (
+            self.exchange_rates_validator.validate_currency_code_pair(
+                currency_code_pair
+            )
+        )
+        validated_rate = (
+            self.exchange_rates_validator.validate_exchange_rate(
+                rate
+            )
+        )
+        update_dto = UpdateExchangeRateDTO(
+            currency_code_pair=validated_code_pair,
+            rate=validated_rate,
+        )
+        exchange_rate = self.exchange_rates_service.patch_exchange_rate(
+            update_dto
+        )
+        return exchange_rate, HTTPStatus.OK

@@ -94,28 +94,8 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         self._handle_request("POST")
 
-        #     path, query_params = self._parse_url()
-        #
-        #     print("DEBUG")
-        #     print(f"Path: {path}")
-        #     print(f"Query params: {query_params}")
-        #     print(f"Headers: {dict(self.headers)}")
-        #
-        #     content_length = int(self.headers.get("Content-Length", 0))
-        #     print(f"Content-Length: {content_length}")
-        #
-        #     if content_length > 0:
-        #         post_data = self.rfile.read(content_length)
-        #         print(f"Raw POST data: {post_data}")
-        #
-        #         try:
-        #             form_data = parse_qs(post_data.decode("utf-8"))
-        #             print(f"Parsed form data: {form_data}")
-        #         except Exception as e:
-        #             print(f"Parse error: {e}")
-        #     else:
-        #         print("No POST data")
-        #     print("DEBUG END")
+    def do_PATCH(self) -> None:
+        self._handle_request("PATCH")
 
     def _render_response(
         self, payload: dict, status: HTTPStatus

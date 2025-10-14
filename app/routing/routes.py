@@ -26,3 +26,8 @@ def setup_currency_routes(
         "/exchangeRates",
         exchange_rates_controller.handle_post_exchange_rate,
     )
+    router.add_route(
+        "PATCH",
+        "/exchangeRate/{currency_code_pair}",
+        exchange_rates_controller.handle_patch_exchange_rate,
+    )

@@ -29,9 +29,9 @@ class ExchangeRateValidator:
             )
         return cleaned_code_pair
 
-    def validate_exchange_rate(self, rate: str) -> str:
+    def validate_exchange_rate(self, rate: str) -> Decimal:
         """
-        Validate exchange rate and return normalized string representation.
+        Validate exchange rate and return it as a Decimal.
         """
         cleaned_rate = rate.strip()
 
@@ -64,7 +64,7 @@ class ExchangeRateValidator:
                     f"{config.max_decimal_places} decimal places"
                 )
 
-        return str(decimal_value.normalize())
+        return decimal_value.normalize()
 
     def validate_exchange_rate_data(
         self, base_currency_code: str, target_currency_code: str, rate: str

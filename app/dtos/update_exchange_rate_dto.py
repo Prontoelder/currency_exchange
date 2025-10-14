@@ -3,7 +3,6 @@ from decimal import Decimal
 
 
 @dataclass(frozen=True)
-class CreateExchangeRateDTO:
-    base_currency_code: str
-    target_currency_code: str
+class UpdateExchangeRateDTO:
+    currency_code_pair: str
     rate: Decimal

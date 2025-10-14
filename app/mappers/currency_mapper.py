@@ -1,18 +1,16 @@
 import sqlite3
 from typing import Any
 
+from app.dtos.create_currency_dto import CreateCurrencyDTO
 from app.dtos.currency_dto import CurrencyDTO
-from app.mappers.base_mapper import BaseMapper
 from app.models.currency import Currency
 
 
-class CurrencyMapper(BaseMapper):
+class CurrencyMapper:
     @staticmethod
-    def dict_to_dto(data: dict[str, Any]) -> CurrencyDTO:
-        """Converts dictionary to CurrencyDTO."""
-        currency_id = data.get("id")
-        return CurrencyDTO(
-            id=int(currency_id) if currency_id is not None else None,
+    def dict_to_dto(data: dict[str, Any]) -> CreateCurrencyDTO:
+        """Converts dictionary to CreateCurrencyDTO."""
+        return CreateCurrencyDTO(
             name=data.get("name", ""),
             code=data.get("code", ""),
             sign=data.get("sign", ""),
@@ -29,10 +27,12 @@ class CurrencyMapper(BaseMapper):
         )
 
     @staticmethod
-    def dto_to_entity(dto: CurrencyDTO) -> Currency:
-        """Converts CurrencyDTO to Currency entity."""
+    def dto_to_entity(dto: CurrencyDTO | CreateCurrencyDTO) -> Currency:
+        """Converts CurrencyDTO or CreateCurrencyDTO to Currency entity."""
+        # For CreateCurrencyDTO, id will not be present.
+        currency_id = getattr(dto, "id", None)
         return Currency(
-            id=dto.id,
+            id=currency_id,
             name=dto.name,
             code=dto.code,
             sign=dto.sign,
