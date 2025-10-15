@@ -1,4 +1,5 @@
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 
 from app.config import config
@@ -6,7 +7,7 @@ from app.exceptions import DatabaseError
 
 
 @contextmanager
-def db_session():
+def db_session() -> Iterator[sqlite3.Cursor]:
     """Database session with auto commit/rollback and dict-like rows."""
     try:
         conn = sqlite3.connect(config.db_path)
