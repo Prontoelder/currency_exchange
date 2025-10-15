@@ -23,7 +23,9 @@ class Configuration:
     currency_name_max_len: int = 64
     currency_sign_max_len: int = 5
     max_rate: str = "1000000"
-    max_decimal_places: int = 6
+    max_decimal_rate_places: int = 6
+    max_decimal_amount_places: int = 2
+
 
 
 config = Configuration()
