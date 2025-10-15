@@ -34,7 +34,10 @@ class Container:
     # Services
     currency_service = CurrencyService(currency_dao, currency_mapper)
     exchange_rates_service = ExchangeRateService(
-        exchange_rates_dao, exchange_rates_mapper
+        exchange_rates_dao,
+        currency_dao,
+        exchange_rates_mapper,
+        currency_mapper
     )
 
     # Controllers
@@ -42,7 +45,10 @@ class Container:
         currency_service, currency_validator, currency_mapper
     )
     exchange_rates_controller = ExchangeRatesController(
-        exchange_rates_service, exchange_rates_validator, exchange_rates_mapper
+        exchange_rates_service,
+        exchange_rates_validator,
+        exchange_rates_mapper,
+        currency_validator
     )
 
     # Router
