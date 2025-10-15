@@ -1,7 +1,11 @@
 from decimal import Decimal, InvalidOperation
 
 from app.config import config
-from app.exceptions import InvalidCurrencyPairError, InvalidExchangeRateError
+from app.exceptions import (
+    InvalidAmountError,
+    InvalidCurrencyPairError,
+    InvalidExchangeRateError,
+)
 from app.validations.currency_validator import CurrencyValidator
 
 
@@ -58,17 +62,17 @@ class ExchangeRateValidator:
         # Check decimal places
         if "." in cleaned_rate:
             decimal_places = len(cleaned_rate.split(".")[1])
-            if decimal_places > config.max_decimal_places:
+            if decimal_places > config.max_decimal_rate_places:
                 raise InvalidExchangeRateError(
                     f"Exchange rate cannot have more than "
-                    f"{config.max_decimal_places} decimal places"
+                    f"{config.max_decimal_rate_places} decimal places"
                 )
 
         return decimal_value.normalize()
 
     def validate_exchange_rate_data(
         self, base_currency_code: str, target_currency_code: str, rate: str
-    ):
+    ) -> dict[str, str | Decimal]:
         """Validate all exchange rate data at once."""
         validated_base_currency_code = (
             self.currency_validator.validate_currency_code(base_currency_code)
@@ -85,3 +89,25 @@ class ExchangeRateValidator:
             "target_currency_code": validated_target_currency_code,
             "rate": validated_rate,
         }
+
+    def validate_amount(self, amount: str) -> Decimal:
+        """Validate amount for exchange and return it as a Decimal."""
+        cleaned_amount = amount.strip()
+
+        if not cleaned_amount:
+            raise InvalidAmountError("Amount cannot be empty")
+
+        try:
+            decimal_value = Decimal(cleaned_amount)
+        except InvalidOperation:
+            raise InvalidAmountError("Invalid amount format")
+
+        if decimal_value <= 0:
+            raise InvalidAmountError("Amount must be a positive number")
+
+        if ("." in cleaned_amount and len(cleaned_amount.split(".")[1]) >
+                config.max_decimal_amount_places):
+            raise InvalidAmountError("Amount cannot have more "
+                                     "than 2 decimal places")
+
+        return decimal_value
