@@ -97,6 +97,16 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_PATCH(self) -> None:
         self._handle_request("PATCH")
 
+    def do_OPTIONS(self) -> None:
+        self.send_response(HTTPStatus.NO_CONTENT)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PATCH, OPTIONS"
+        )
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
+
     def _render_response(
         self, payload: dict, status: HTTPStatus
     ) -> tuple[bytes, int, dict[str, str]]:
@@ -142,6 +152,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         """Send an HTTP response to client."""
         body, status, headers = response
         self.send_response(status)
+        headers["Access-Control-Allow-Origin"] = "*"
         for header, value in headers.items():
             self.send_header(header, value)
         self.end_headers()
