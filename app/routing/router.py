@@ -17,7 +17,9 @@ class Router:
         method = method.upper()
         self.routes.setdefault(method, {})[path] = handler
 
-    def _find_handler_by_template(self, method_routes: dict, path: str):
+    def _find_handler_by_template(
+        self, method_routes: dict[str, Callable], path: str
+    ) -> tuple[Callable, dict[str, str]] | tuple[None, None]:
         """
         Finds a handler by matching the path against registered templates
         (e.g., /path/{param}).
@@ -50,7 +52,13 @@ class Router:
         return None, None
 
 
-    def resolve(self, method: str, path: str):
+    def resolve(
+        self, method: str, path: str
+    ) -> (
+            tuple[Callable, dict[str, str]] |
+            tuple[Callable, None] |
+            tuple[None, None]
+    ):
         """Resolve the handler function for a given HTTP method and path."""
         method = method.upper()
         method_routes = self.routes.get(method, {})
