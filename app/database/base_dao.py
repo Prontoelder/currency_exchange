@@ -41,4 +41,7 @@ class BaseDAO:
         """Execute a statement and return the last inserted row id."""
         with db_session() as cursor:
             cursor.execute(sql, params or ())
-            return int(cursor.lastrowid)
+            if cursor.lastrowid is None:
+                raise RuntimeError("No last row id was returned "
+                                   "from the database")
+            return cursor.lastrowid
