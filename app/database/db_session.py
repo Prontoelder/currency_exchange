@@ -15,7 +15,6 @@ def db_session() -> Iterator[sqlite3.Cursor]:
         # Enforce foreign key constraints in SQLite
         conn.execute("PRAGMA foreign_keys = ON")
         cursor = conn.cursor()
-        cursor.execute("PRAGMA foreign_keys = ON")
     except sqlite3.Error as e:
         raise DatabaseError(f"Database error: {e}") from e
 
