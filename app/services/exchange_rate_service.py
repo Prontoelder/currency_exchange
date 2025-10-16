@@ -113,7 +113,7 @@ class ExchangeRateService:
         self, from_code: str, to_code: str
     ) -> Decimal | None:
         """
-        Finds the best available exchange rate according to the logic:
+        Finds available exchange rate according to the logic:
         1. Direct rate (A->B)
         2. Inverse rate (B->A)
         3. Cross-rate through USD (A->USD->B)
