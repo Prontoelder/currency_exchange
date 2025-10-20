@@ -18,6 +18,24 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+def to_camel_case(snake_str: str) -> str:
+    """Convert snake_case string to camelCase."""
+    parts = snake_str.split("_")
+    return parts[0] + "".join(x.title() for x in parts[1:])
+
+
+def convert_keys_to_camel_case(data: Any) -> Any:
+    """Recursively convert dictionary keys from snake_case to camelCase."""
+    if isinstance(data, dict):
+        return {
+            to_camel_case(k): convert_keys_to_camel_case(v)
+            for k, v in data.items()
+        }
+    if isinstance(data, list):
+        return [convert_keys_to_camel_case(i) for i in data]
+    return data
+
+
 class Response:
     @classmethod
     def render(
@@ -26,10 +44,18 @@ class Response:
         """
         Render payload as JSON response.
         """
-        body_str = json.dumps(
-            payload,
-            ensure_ascii=False,
-            cls=CustomJSONEncoder)
+        try:
+            processed_payload = json.loads(
+                json.dumps(payload, ensure_ascii=False, cls=CustomJSONEncoder)
+            )
+            camel_case_payload = convert_keys_to_camel_case(processed_payload)
+            body_str = json.dumps(camel_case_payload, ensure_ascii=False)
+        except (TypeError, ValueError):
+            status = HTTPStatus.INTERNAL_SERVER_ERROR
+            body_str = json.dumps(
+                {"message": "Failed to serialize response payload."}
+            )
+
         body_bytes = body_str.encode("utf-8")
         headers = cls._headers_dict(body_bytes)
         return (
