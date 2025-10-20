@@ -1,5 +1,7 @@
 from collections.abc import Callable
 
+from app.exceptions import UnsupportedHTTPMethodError
+
 
 class Router:
     PATH_PARAM_INDEX = 2
@@ -15,7 +17,10 @@ class Router:
     def add_route(self, method: str, path: str, handler: Callable) -> None:
         """Register a handler function for a specific HTTP method and path."""
         method = method.upper()
-        self.routes.setdefault(method, {})[path] = handler
+        if method not in self.routes:
+            raise UnsupportedHTTPMethodError(f"Unsupported HTTP method: "
+                                             f"{method}")
+        self.routes[method][path] = handler
 
     def _find_handler_by_template(
         self, method_routes: dict[str, Callable], path: str
