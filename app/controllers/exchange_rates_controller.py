@@ -1,6 +1,5 @@
 from http import HTTPStatus
 
-from app.dtos.calculated_exchange_dto import CalculatedExchangeDTO
 from app.dtos.exchange_rate_dto import ExchangeRateDTO
 from app.dtos.update_exchange_rate_dto import UpdateExchangeRateDTO
 from app.mappers.exchange_rate_mapper import ExchangeRateMapper
@@ -70,7 +69,7 @@ class ExchangeRatesController:
         rate: str = "",
         **_kwargs: dict,
     ) -> tuple[ExchangeRateDTO, HTTPStatus]:
-        """Create new exchange rate entry."""
+        """Update an existing exchange rate."""
         validated_code_pair = (
             self.exchange_rates_validator.validate_currency_code_pair(
                 currency_code_pair
@@ -90,24 +89,3 @@ class ExchangeRatesController:
         )
         return exchange_rate, HTTPStatus.OK
 
-    def handle_get_exchange(
-        self, to: str = "", amount: str = "", **kwargs: dict
-    ) -> tuple[CalculatedExchangeDTO, HTTPStatus]:
-        """Handles currency exchange calculation."""
-        from_code = str(kwargs.get("from", ""))
-
-        validated_from = self.currency_validator.validate_currency_code(
-            from_code
-        )
-        validated_to = self.currency_validator.validate_currency_code(to)
-        validated_amount = self.exchange_rates_validator.validate_amount(
-            amount
-        )
-
-        calculated_dto = self.exchange_rates_service.calculate_exchange(
-            from_code=validated_from,
-            to_code=validated_to,
-            amount=validated_amount,
-        )
-
-        return calculated_dto, HTTPStatus.OK
