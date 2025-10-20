@@ -6,8 +6,8 @@ from .currency_dto import CurrencyDTO
 
 @dataclass(frozen=True)
 class CalculatedExchangeDTO:
-    baseCurrency: CurrencyDTO
-    targetCurrency: CurrencyDTO
+    base_currency: CurrencyDTO
+    target_currency: CurrencyDTO
     rate: Decimal
     amount: Decimal
-    convertedAmount: Decimal
+    converted_amount: Decimal
