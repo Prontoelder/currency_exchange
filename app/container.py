@@ -1,4 +1,5 @@
 from app.controllers.currency_controller import CurrencyController
+from app.controllers.exchange_controller import ExchangeController
 from app.controllers.exchange_rates_controller import ExchangeRatesController
 from app.database.currency_dao import CurrencyDAO
 from app.database.exchange_rate_dao import ExchangeRateDAO
@@ -50,11 +51,19 @@ class Container:
         exchange_rates_mapper,
         currency_validator
     )
+    exchange_controller = ExchangeController(
+        exchange_rates_service,
+        exchange_rates_validator,
+        currency_validator
+    )
 
     # Router
     router = Router()
     setup_currency_routes(
-        router, currency_controller, exchange_rates_controller
+        router,
+        currency_controller,
+        exchange_rates_controller,
+        exchange_controller
     )
 
 container = Container()
