@@ -11,9 +11,8 @@ def main() -> None:
     init_db()
     RequestHandler.configurate(container.router, container.response_renderer)
 
-    server_address = (config.host, config.port)
-    server = HTTPServer(server_address, RequestHandler)
-    print(f"Start server on: {server_address[0]}:{server_address[1]}")
+    server = HTTPServer((config.host, config.port), RequestHandler)
+    print(f"Start server on: {config.host}:{config.port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
