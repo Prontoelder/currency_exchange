@@ -1,5 +1,5 @@
 def setup_currency_routes(
-    router, currency_controller, exchange_rates_controller
+    router, currency_controller, exchange_rates_controller, exchange_controller
 ):
     """Setup routes for endpoints."""
     router.add_route(
@@ -21,7 +21,7 @@ def setup_currency_routes(
     router.add_route(
         "GET",
         "/exchange",
-        exchange_rates_controller.handle_get_exchange,
+        exchange_controller.handle_get_exchange,
     )
     router.add_route(
         "POST",
