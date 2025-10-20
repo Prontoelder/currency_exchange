@@ -6,7 +6,11 @@ from app.dtos.calculated_exchange_dto import CalculatedExchangeDTO
 from app.dtos.create_exchange_rate_dto import CreateExchangeRateDTO
 from app.dtos.exchange_rate_dto import ExchangeRateDTO
 from app.dtos.update_exchange_rate_dto import UpdateExchangeRateDTO
-from app.exceptions import CurrencyNotFoundError, CurrencyPairNotFoundError
+from app.exceptions import (
+    CurrencyNotFoundError,
+    CurrencyPairNotFoundError,
+    SameCurrencyError,
+)
 from app.mappers.currency_mapper import CurrencyMapper
 from app.mappers.exchange_rate_mapper import ExchangeRateMapper
 
@@ -78,6 +82,10 @@ class ExchangeRateService:
         """
         Calculates the exchange of a given amount from one currency to another.
         """
+        if from_code == to_code:
+            raise SameCurrencyError(
+                "Base and target currency codes cannot be the same."
+            )
         rate = self._find_best_rate(from_code, to_code)
 
         if rate is None:
@@ -98,15 +106,15 @@ class ExchangeRateService:
         )
 
         return CalculatedExchangeDTO(
-            baseCurrency=self.currency_mapper.entity_to_dto(
+            base_currency=self.currency_mapper.entity_to_dto(
                 base_currency_entity
             ),
-            targetCurrency=self.currency_mapper.entity_to_dto(
+            target_currency=self.currency_mapper.entity_to_dto(
                 target_currency_entity
             ),
             rate=rate,
             amount=amount,
-            convertedAmount=converted_amount,
+            converted_amount=converted_amount,
         )
 
     def _find_best_rate(
